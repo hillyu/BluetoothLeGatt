@@ -1,18 +1,22 @@
-Build Instructions
--------------------
+The BT module has following services/characteristics/ which are used in this project:
 
-This sample uses the Gradle build system. To build this project, use the
-"gradlew build" command or use "Import Project" in Android Studio.
+Service: 0000ffe0-0000-1000-8000-00805f9b34fb
+         Characteristic: 0000ffe4-0000-1000-8000-00805f9b34fb   --> read data from module.
+                Property: Notify. (so we can notify the phone via onNotify call back, the sample is using onCharecteristicchange() which is an alternative.)
 
-To see a list of all available commands, run "gradlew tasks".
+Service: 0000ffe5-0000-1000-8000-00805f9b34fb
+         Characteristic: 0000ffe9-0000-1000-8000-00805f9b34fb   --> read data from module.
+                Property: Write. (so we can write "x" to the module as a "ready to receive" signal.)
 
-Dependencies
--------------
+The UUID to name mapping is done in SampleAttributes.java, which is a nice design.
 
-- Android SDK Build-tools v18.1
-- Android Support Repository v2
+There are a few important things you may want to know about ble.
 
-Dependencies are available for download via the Android SDK Manager.
-
-Android Studio is available for download at:
-    http://developer.android.com/sdk/installing/studio.html
+Basic procedures using BLE.
+1. get the ble device.
+2. get all the services and characteristics.
+3. loop through those services and characteristics to find desired characteristic in our case "read" and "write".
+4. for read set the notification: mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+5. to write characteristic, you need to mCharacteristic.setValue() first, and then trigger writeCharacteristic(mCharacteristic).
+Refer to BluetoothLeService.java --> public void writeCharacteristic(BluetoothGattCharacteristic characteristic, String stringData) for more detail.
+6. the major task is to implement the callback function. Refer to(BluetoothLeService.java): private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
