@@ -150,23 +150,30 @@ public class BluetoothLeService extends Service {
         } else if (UUID_POSTURE_SENSING_DATA_STREAM.equals(characteristic.getUuid())) {
             final byte[] pos = characteristic.getValue();
             final ByteBuffer bb = ByteBuffer.allocate(14);
-            bb.order(ByteOrder.LITTLE_ENDIAN);
+            bb.order(ByteOrder.BIG_ENDIAN);
             bb.put(pos);
             bb.rewind();
+            if (bb.get()==0x24 && bb.get() ==0x02)
+            {
+
+            short w = bb.getShort();
             short x = bb.getShort();
             short y = bb.getShort();
             short z = bb.getShort();
 
 
+
             //keep on reading for temperature sensor MPU6055 only.
             short temperature = bb.getShort();
             //now gyro
-            short gx = bb.getShort();
-            short gy = bb.getShort();
-            short gz = bb.getShort();
+            if (bb.get() ==0x0d && bb.get() == 0x0a)
+            {
+
 
             Log.d(TAG, "Received data from posture sensor");
-            intent.putExtra(EXTRA_DATA, String.valueOf((temperature + 12412.0) / 340));
+            intent.putExtra(EXTRA_DATA, String.valueOf((temperature + 12412.0) / 340));}
+
+            }
 
         }
             //Edit by Hill End
